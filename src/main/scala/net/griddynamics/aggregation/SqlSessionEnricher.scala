@@ -9,7 +9,7 @@ import org.apache.spark.sql.functions._
 /**
   * @author Aleksandr_Meterko
   */
-object SessionAggregator {
+object SqlSessionEnricher {
 
   private val DefaultTimeoutSeconds = 5 * 60
 

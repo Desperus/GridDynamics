@@ -7,7 +7,7 @@ import org.scalatest.FunSuite
 /**
   * @author Aleksandr_Meterko
   */
-class SessionAggregatorTest extends FunSuite {
+class SqlSessionEnricherTest extends FunSuite {
 
   private val InputPath = getClass.getResource("/events/input.csv").getFile
 
@@ -19,7 +19,11 @@ class SessionAggregatorTest extends FunSuite {
   }
 
   test("Something is run") {
-    SessionAggregator.enrich(sparkSession(), InputPath)
+    SqlSessionEnricher.enrich(sparkSession(), InputPath)
+  }
+
+  test("Something else is run") {
+    PureSqlSessionEnricher.enrich(sparkSession(), InputPath)
   }
 
 }
