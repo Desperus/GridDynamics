@@ -10,7 +10,6 @@ import org.scalatest.FunSuite
 class TaskPrinter extends FunSuite {
 
   test("Print results and check that jobs did not fail") {
-
   }
 
 }
