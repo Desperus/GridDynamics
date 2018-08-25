@@ -5,17 +5,11 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 /**
   * @author Aleksandr_Meterko
   */
-object PureSqlSessionEnricher {
+object PureSqlSessionEnricher extends SessionEnricher {
 
   private val DefaultTimeoutSeconds = 5 * 60
 
-  def enrich(spark: SparkSession, filePath: String): DataFrame = {
-    val events = spark.read
-      .format("csv")
-      .option("header", "true")
-      .option("mode", "DROPMALFORMED")
-      .load(filePath)
-
+  override def enrich(events: DataFrame): DataFrame = {
     events.createOrReplaceTempView("events")
     events.sqlContext.sql(
       s"""SELECT category, product, userId, eventTime, eventType, sessionId,

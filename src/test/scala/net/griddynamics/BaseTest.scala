@@ -1,7 +1,7 @@
 package net.griddynamics
 
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 
 /**
@@ -24,6 +24,10 @@ class BaseTest extends FunSuite with BeforeAndAfterAll {
       .set("spark.sql.session.timeZone", "UTC")
       .setMaster("local[*]")
     SparkSession.builder().config(sparkConf).getOrCreate()
+  }
+
+  protected def defaultDataFrame(): DataFrame = {
+    FullAnalyzeJob.loadFromCsv(sparkSession(), InputPath)
   }
 
 }

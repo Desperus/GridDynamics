@@ -13,7 +13,7 @@ class TaskPrinter extends BaseTest {
   private val RowsInBaseCsv = 27
 
   test("Print results and check that jobs did not fail") {
-    val sessions = PureSqlSessionEnricher.enrich(sparkSession(), InputPath)
+    val sessions = PureSqlSessionEnricher.enrich(defaultDataFrame())
 
     sessions.show(RowsInBaseCsv, truncate = false)
     StatisticsCalculator.median(sessions).show()
