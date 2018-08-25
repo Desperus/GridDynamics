@@ -48,3 +48,5 @@ out
 build.log
 output/
 .toDelete
+
+result

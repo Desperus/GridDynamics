@@ -1,15 +1,23 @@
 package net.griddynamics
 
-import org.scalatest.FunSuite
+import net.griddynamics.aggregation.PureSqlSessionEnricher
+import net.griddynamics.statistics.StatisticsCalculator
 
 /**
   * Used to dump results into both console and files to be analyzed manually.
   *
   * @author Aleksandr_Meterko
   */
-class TaskPrinter extends FunSuite {
+class TaskPrinter extends BaseTest {
+
+  private val RowsInBaseCsv = 27
 
   test("Print results and check that jobs did not fail") {
+    val sessions = PureSqlSessionEnricher.enrich(sparkSession(), InputPath)
+
+    sessions.show(RowsInBaseCsv, truncate = false)
+    StatisticsCalculator.median(sessions).show()
+
   }
 
 }
