@@ -1,6 +1,6 @@
 package net.griddynamics.aggregation
 
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
 /**
   * @author Aleksandr_Meterko
@@ -9,7 +9,7 @@ object PureSqlSessionEnricher {
 
   private val DefaultTimeoutSeconds = 5 * 60
 
-  def enrich(spark: SparkSession, filePath: String): Unit = {
+  def enrich(spark: SparkSession, filePath: String): DataFrame = {
     val events = spark.read
       .format("csv")
       .option("header", "true")
@@ -41,8 +41,6 @@ object PureSqlSessionEnricher {
               )
           )
                           """)
-      .show(30)
-
   }
 
 }
