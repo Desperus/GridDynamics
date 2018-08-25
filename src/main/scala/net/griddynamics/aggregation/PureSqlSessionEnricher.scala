@@ -40,7 +40,7 @@ object PureSqlSessionEnricher {
                 )
               )
           )
-                          """.stripMargin)
+        """.stripMargin)
   }
 
 }
