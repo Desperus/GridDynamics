@@ -9,6 +9,9 @@ import org.apache.spark.sql.DataFrame
   */
 object StatisticsCalculator {
 
+  private val FirstGroupBound = 1 * 60
+  private val SecondGroupBound = 5 * 60
+
   def median(sessions: DataFrame): DataFrame = {
     sessions.createOrReplaceTempView("sessions")
     sessions.sqlContext
@@ -22,6 +25,30 @@ object StatisticsCalculator {
              FROM sessions)
            GROUP BY category
         """.stripMargin)
+  }
+
+  def timeGroups(sessions: DataFrame): DataFrame = {
+    sessions.createOrReplaceTempView("sessions")
+    sessions.sqlContext.sql(
+      s"""SELECT category, count(*) as users, timeGroup
+          FROM
+            (SELECT category, userId,
+            CASE WHEN sessionDuration < $FirstGroupBound
+              THEN 1
+            WHEN sessionDuration < $SecondGroupBound
+              THEN 2
+            ELSE 3
+            END as timeGroup
+           FROM
+             (SELECT category, userId,
+              UNIX_TIMESTAMP(MAX(eventTime), 'yyyy-MM-dd HH:mm:ss') -
+               UNIX_TIMESTAMP(MIN(eventTime), 'yyyy-MM-dd HH:mm:ss') as sessionDuration
+             FROM sessions
+             GROUP BY category, userId, sessionId))
+          GROUP BY category, timeGroup
+          ORDER BY category, timeGroup
+      """.stripMargin
+    )
   }
 
 }

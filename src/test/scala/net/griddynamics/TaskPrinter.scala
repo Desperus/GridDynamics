@@ -17,6 +17,7 @@ class TaskPrinter extends BaseTest {
 
     sessions.show(RowsInBaseCsv, truncate = false)
     StatisticsCalculator.median(sessions).show()
+    StatisticsCalculator.timeGroups(sessions).show(RowsInBaseCsv, truncate = false)
 
   }
 
