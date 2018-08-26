@@ -11,9 +11,7 @@ import org.apache.spark.sql.functions._
   */
 object SqlSessionEnricher extends SessionEnricher {
 
-  private val DefaultTimeoutSeconds = 5 * 60
-
-  override def enrich(events: DataFrame): DataFrame = {
+  override def enrich(events: DataFrame, timeFrame: Int = DefaultTimeoutSeconds): DataFrame = {
     val rowWindow = Window.partitionBy("category")
       .orderBy("eventTimeCast")
       .rowsBetween(-1, -1)
@@ -25,7 +23,7 @@ object SqlSessionEnricher extends SessionEnricher {
       .withColumn("eventTimeCast", unix_timestamp(col("eventTime")))
       .withColumn("prevTimestamp", lag("eventTimeCast", 1).over(rowWindow))
       .withColumn("isNewSession", when(col("prevTimestamp").isNull
-        .or(col("eventTimeCast") - col("prevTimestamp") > DefaultTimeoutSeconds), 1).otherwise(0))
+        .or(col("eventTimeCast") - col("prevTimestamp") > timeFrame), 1).otherwise(0))
       .withColumn("sessionId", sum("isNewSession").over(sessionIdWindow))
       .withColumn("sessionStartTime", first("eventTime").over(sessionTimeWindow))
       .withColumn("sessionEndTime", last("eventTime").over(sessionTimeWindow))

@@ -1,5 +1,6 @@
 package net.griddynamics.aggregation
 
+import net.griddynamics.aggregation.SqlSessionEnricher.DefaultTimeoutSeconds
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 /**
@@ -7,9 +8,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
   */
 object PureSqlSessionEnricher extends SessionEnricher {
 
-  private val DefaultTimeoutSeconds = 5 * 60
-
-  override def enrich(events: DataFrame): DataFrame = {
+  override def enrich(events: DataFrame, timeFrame: Int = DefaultTimeoutSeconds): DataFrame = {
     events.createOrReplaceTempView("events")
     events.sqlContext.sql(
       s"""SELECT category, product, userId, eventTime, eventType, sessionId,
@@ -21,7 +20,7 @@ object PureSqlSessionEnricher extends SessionEnricher {
                 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as sessionId
             FROM
               (SELECT *,
-                CASE WHEN timeDiff IS NULL OR timeDiff > $DefaultTimeoutSeconds
+                CASE WHEN timeDiff IS NULL OR timeDiff > $timeFrame
                 THEN 1
                 ELSE 0
                 END

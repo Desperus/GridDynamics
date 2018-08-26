@@ -1,6 +1,9 @@
 package net.griddynamics
 
-import net.griddynamics.aggregation.PureSqlSessionEnricher
+import java.nio.file.Paths
+
+import net.griddynamics.aggregation.{PureSqlSessionEnricher, SqlSessionEnricher}
+import net.griddynamics.statistics.StatisticsCalculator
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 /**
@@ -11,15 +14,24 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 object FullAnalyzeJob {
 
   def main(args: Array[String]): Unit = {
-    // just a code sample as main method not used
     if (args.length != 2) {
       print("Please provide 2 parameters: input and output paths")
       return
     }
     val sparkSession = SparkSession.builder().getOrCreate()
-    PureSqlSessionEnricher.enrich(loadFromCsv(sparkSession, args(0)))
-      .write
-      .csv(args(1))
+
+    def saveDF(dataFrame: DataFrame, fileName: String): Unit = {
+      dataFrame.write
+        .csv(Paths.get(args(1)).resolve(fileName).toAbsolutePath.toString)
+    }
+
+    val events = loadFromCsv(sparkSession, args(0))
+    val sessions = PureSqlSessionEnricher.enrich(events)
+    saveDF(sessions, "pureSqlEnricher")
+    saveDF(SqlSessionEnricher.enrich(events), "apiEnricher")
+    saveDF(StatisticsCalculator.median(sessions), "median")
+    saveDF(StatisticsCalculator.rank(sessions), "rank")
+    saveDF(StatisticsCalculator.timeGroups(sessions), "timeGroups")
   }
 
   def loadFromCsv(spark: SparkSession, filePath: String): DataFrame = {

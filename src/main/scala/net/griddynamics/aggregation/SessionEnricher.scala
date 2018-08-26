@@ -9,6 +9,8 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
   */
 trait SessionEnricher {
 
-  def enrich(events: DataFrame): DataFrame
+  val DefaultTimeoutSeconds: Int = 5 * 60
+
+  def enrich(events: DataFrame, timeFrame: Int = DefaultTimeoutSeconds): DataFrame
 
 }
