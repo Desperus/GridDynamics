@@ -16,12 +16,13 @@ class TaskPrinter extends BaseTest {
   private val RowsInBaseCsv = 27
 
   test("Print results and check that jobs did not fail") {
-    val sessions = PureSqlSessionEnricher.enrich(defaultDataFrame())
+    val events = defaultDataFrame()
+    val sessions = PureSqlSessionEnricher.enrich(events)
 
     sessions.show(RowsInBaseCsv, truncate = false)
     StatisticsCalculator.median(sessions).show()
     StatisticsCalculator.timeGroups(sessions).show(RowsInBaseCsv, truncate = false)
-    StatisticsCalculator.rank(sessions).show(RowsInBaseCsv, truncate = false)
+    StatisticsCalculator.rank(events).show(RowsInBaseCsv, truncate = false)
   }
 
   test("Save results to csv by main job provides results") {

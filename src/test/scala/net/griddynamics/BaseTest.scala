@@ -10,6 +10,7 @@ import org.scalatest.{BeforeAndAfterAll, FunSuite}
 class BaseTest extends FunSuite with BeforeAndAfterAll {
 
   protected val InputPath: String = getClass.getResource("/events/input.csv").getFile
+  protected val defaultCategory = "somecat"
 
   override protected def beforeAll() {
     sparkSession()
@@ -28,6 +29,12 @@ class BaseTest extends FunSuite with BeforeAndAfterAll {
 
   protected def defaultDataFrame(): DataFrame = {
     FullAnalyzeJob.loadFromCsv(sparkSession(), InputPath)
+  }
+
+  protected def createDataFrame(rows: Seq[(String, String, String, String, String)]): DataFrame = {
+    val spark = sparkSession()
+    import spark.implicits._
+    rows.toDF("category", "product", "userId", "eventTime", "eventType")
   }
 
 }

@@ -30,7 +30,7 @@ object FullAnalyzeJob {
     saveDF(sessions, "pureSqlEnricher")
     saveDF(SqlSessionEnricher.enrich(events), "apiEnricher")
     saveDF(StatisticsCalculator.median(sessions), "median")
-    saveDF(StatisticsCalculator.rank(sessions), "rank")
+    saveDF(StatisticsCalculator.rank(events), "rank")
     saveDF(StatisticsCalculator.timeGroups(sessions), "timeGroups")
   }
 

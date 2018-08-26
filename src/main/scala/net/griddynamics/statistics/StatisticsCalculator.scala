@@ -52,13 +52,13 @@ object StatisticsCalculator {
     )
   }
 
-  def rank(sessions: DataFrame): DataFrame = {
-    sessions.createOrReplaceTempView("sessions")
-    sessions.sqlContext.sql(
+  def rank(events: DataFrame, rank: Int = MaxRank): DataFrame = {
+    events.createOrReplaceTempView("events")
+    events.sqlContext.sql(
       s"""SELECT category, product
           FROM
             (SELECT category, product,
-              dense_rank() OVER (PARTITION BY category ORDER BY sessionDuration) as rank
+              dense_rank() OVER (PARTITION BY category ORDER BY sessionDuration DESC) as rank
             FROM
              (SELECT category, product, userId, sessionId, sessionDuration
              FROM
@@ -83,7 +83,7 @@ object StatisticsCalculator {
                GROUP BY category, product, userId, sessionId
              ) uniqueProducts
              WHERE uniqueProducts.curRow = 1))
-          WHERE rank < $MaxRank
+          WHERE rank <= $rank
       """.stripMargin)
   }
 
