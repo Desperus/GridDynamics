@@ -39,6 +39,8 @@ object FullAnalyzeJob {
       .format("csv")
       .option("header", "true")
       .option("mode", "DROPMALFORMED")
+      .option("quote", "\"")
+      .option("escape", "\"")
       .load(filePath)
   }
 
